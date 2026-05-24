@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>h3kathemaker | Official Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            /* Сложный, дорогой оттенок черного шелка */
+            background: radial-gradient(circle at center, #0f1015 0%, #050507 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            perspective: 1000px; /* Для 3D-эффекта карточки */
+        }
+
+        /* Премиальная геометрия на фоне (вместо дешевых сеток) */
+        .bg-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .bg-line-h {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            top: 50%;
+        }
+        .bg-line-v {
+            position: absolute;
+            height: 100%;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            left: 50%;
+        }
+
+        /* ГЛАВНАЯ КАРТОЧКА */
+        .main-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            padding: 4rem 3rem;
+            text-align: center;
+            background: #0a0b0e;
+            /* Ультра-тонкая дорогая рамка */
+            border: 1px solid rgba(255, 255, 255, 0.04); 
+            border-radius: 28px;
+            /* Многослойная мягкая тень */
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            
+            /* Плавный въезд при загрузке */
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: 
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s ease;
+            
+            transform-style: preserve-3d;
+        }
+
+        .main-card.activated {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Аватар контейнер */
+        .avatar-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 2rem auto;
+            transform: translateZ(30px); /* Вынесение в 3D */
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
+            background-color: #0d0e12;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ПРОКАЧАННАЯ ПЛАШКА LIVE С ДВОЙНОЙ АНИМАЦИЕЙ */
+        .status-badge {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            /* Изначально центрируем элемент */
+            transform: translateX(-50%) translateZ(10px);
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 6px 18px;
+            border-radius: 30px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            z-index: 2;
+            overflow: hidden; /* Чтобы блик не вылетал за края плашки */
+            
+            background: #7f1d1d;
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            
+            /* Подключаем плавную пульсацию размера и тени */
+            animation: pulseLive 2.4s infinite cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Создаем бегущий глянцевый блик через псевдоэлемент */
+        .status-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent
+            );
+            transform: skewX(-20deg); /* Наклон блика для динамики */
+            animation: shineGlare 4s infinite ease-in-out;
+        }
+
+        /* Дорогой стальной градиент на никнейме */
+        .nickname {
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: -0.04rem;
+            margin-bottom: 0.7rem;
+            background: linear-gradient(180deg, #ffffff 30%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateZ(20px);
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #71717a;
+            margin-bottom: 2.8rem;
+            line-height: 1.6;
+            letter-spacing: 0.01rem;
+            transform: translateZ(15px);
+        }
+
+        /* Кнопки */
+        .links-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transform: translateZ(25px);
+        }
+
+        .stream-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.15rem 1.5rem;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.02rem;
+            background: #0e1015;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Интерактивный внутренний градиент при наведении */
+        .stream-link::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        /* YouTube */
+        .link-youtube { color: #fca5a5; }
+        .link-youtube::before { background: radial-gradient(circle at center, rgba(239, 68, 68, 0.15) 0%, transparent 100%); }
+        .link-youtube:hover { border-color: rgba(239, 68, 68, 0.3); color: #fecaca; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.05); }
+
+        /* Kick */
+        .link-kick { color: #86efac; }
+        .link-kick::before { background: radial-gradient(circle at center, rgba(34, 197, 94, 0.12) 0%, transparent 100%); }
+        .link-kick:hover { border-color: rgba(34, 197, 94, 0.3); color: #bbf7d0; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.05); }
+
+        /* Telegram */
+        .link-telegram { color: #7dd3fc; }
+        .link-telegram::before { background: radial-gradient(circle at center, rgba(14, 165, 233, 0.15) 0%, transparent 100%); }
+        .link-telegram:hover { border-color: rgba(14, 165, 233, 0.3); color: #e0f2fe; box-shadow: 0 10px 25px rgba(14, 165, 233, 0.05); }
+
+        .stream-link:hover::before {
+            opacity: 1;
+        }
+        
+        .stream-link:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 1. Эффект сердцебиения и неонового дыхания (СмещениеtranslateX(-50%) сохраняем!) */
+        @keyframes pulseLive {
+            0% { 
+                transform: translateX(-50%) translateZ(10px) scale(1); 
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); 
+                border-color: rgba(239, 68, 68, 0.4); 
+            }
+            15% { 
+                transform: translateX(-50%) translateZ(10px) scale(1.05); 
+                box-shadow: 0 0 18px rgba(239, 68, 68, 0.4); 
+                border-color: rgba(239, 68, 68, 0.6); 
+            }
+            30% { 
+                transform: translateX(-50%) translateZ(10px) scale(1); 
+                box-shadow: 0 0 12px rgba(239, 68, 68, 0.25); 
+            }
+            45% { 
+                transform: translateX(-50%) translateZ(10px) scale(1.03); 
+                box-shadow: 0 0 16px rgba(239, 68, 68, 0.35); 
+            }
+            70%, 100% { 
+                transform: translateX(-50%) translateZ(10px) scale(1); 
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.15); 
+                border-color: rgba(239, 68, 68, 0.3); 
+            }
+        }
+
+        /* 2. Анимация бегущего блика */
+        @keyframes shineGlare {
+            0% { left: -150%; }
+            15%, 100% { left: 150%; } /* Блик пробегает быстро, а потом "отдыхает" */
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            body { padding: 1.5rem; }
+            .main-card { padding: 3rem 2rem; }
+            .nickname { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-lines">
+        <div class="bg-line-h"></div>
+        <div class="bg-line-v"></div>
+    </div>
+
+    <div class="main-card" id="main-card">
+        <div class="avatar-container">
+            <img src="photo_2025-09-19_08-22-36.jpg" alt="h3kathemaker" class="avatar">
+            <div class="status-badge">Live</div>
+        </div>
+
+        <h1 class="nickname">h3kathemaker</h1>
+        <p class="status-text">Игры и ламповое общение. Присоединяйся к трансляции.</p>
+
+        <div class="links-grid">
+            <a href="https://www.youtube.com/@h3kathemaker" target="_blank" class="stream-link link-youtube">
+                <span>YouTube Стримы</span>
+            </a>
+            
+            <a href="https://kick.com/h3kathemaker" target="_blank" class="stream-link link-kick">
+                <span>Kick Трансляции</span>
+            </a>
+
+            <a href="https://t.me/selfdestruct696" target="_blank" class="stream-link link-telegram">
+                <span>Telegram Канал</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('main-card');
+            
+            // 1. Активация проявления карточки
+            setTimeout(() => {
+                card.classList.add('activated');
+            }, 100);
+
+            // 2. Интеллектуальный 3D-параллакс эффект для ПК
+            if (window.innerWidth > 768) {
+                document.addEventListener('mousemove', (e) => {
+                    const cx = window.innerWidth / 2;
+                    const cy = window.innerHeight / 2;
+                    
+                    const rotateX = ((cy - e.clientY) / cy) * 8; 
+                    const rotateY = ((e.clientX - cx) / cx) * 8;
+                    
+                    card.style.transition = 'transform 0.05s ease-out, box-shadow 0.05s ease-out';
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1)`;
+                    card.style.boxShadow = `${-rotateY * 2}px ${rotateX * 2}px 80px rgba(0, 0, 0, 0.9)`;
+                });
+
+                document.addEventListener('mouseleave', () => {
+                    card.style.transition = 'transform 0.5s ease-out, box-shadow 0.5s ease-out';
+                    card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+                    card.style.boxShadow = `0 30px 70px rgba(0, 0, 0, 0.8)`;
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
