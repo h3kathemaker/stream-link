@@ -17,22 +17,23 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            /* Сложный, дорогой оттенок черного шелка */
             background: radial-gradient(circle at center, #0f1015 0%, #050507 100%);
             color: #f8fafc;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            overflow-y: auto !important;
             position: relative;
-            perspective: 1000px; /* Для 3D-эффекта карточки */
+            perspective: 1000px;
+            padding: 4rem 2rem;
         }
 
-        /* Премиальная геометрия на фоне (вместо дешевых сеток) */
+        /* Тонкие геометрические линии на фоне */
         .bg-lines {
-            position: absolute;
+            position: fixed; 
             width: 100%;
             height: 100%;
             top: 0;
@@ -45,7 +46,7 @@
             width: 100%;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-            top: 50%;
+            top: 30%;
         }
         .bg-line-v {
             position: absolute;
@@ -55,45 +56,48 @@
             left: 50%;
         }
 
-        /* ГЛАВНАЯ КАРТОЧКА */
-        .main-card {
+        /* Главный контейнер-обертка */
+        .page-wrapper {
             position: relative;
             z-index: 10;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ГЛАВНАЯ КАРТОЧКА С СОЦСЕТЯМИ */
+        .main-card {
+            position: relative;
             width: 100%;
             max-width: 420px;
             padding: 4rem 3rem;
             text-align: center;
             background: #0a0b0e;
-            /* Ультра-тонкая дорогая рамка */
             border: 1px solid rgba(255, 255, 255, 0.04); 
             border-radius: 28px;
-            /* Многослойная мягкая тень */
             box-shadow: 
                 0 30px 70px rgba(0, 0, 0, 0.8),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin-bottom: 5rem; 
             
-            /* Плавный въезд при загрузке */
-            opacity: 0;
-            transform: translateY(20px) scale(0.98);
-            transition: 
-                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s ease;
+            transform-style: preserve-3d; 
+            will-change: transform;
+            transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s ease-out;
             
-            transform-style: preserve-3d;
+            opacity: 1 !important;
+            transform: rotateX(0deg) rotateY(0deg) scale(1);
         }
 
-        .main-card.activated {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* Аватар контейнер */
+        /* Контейнер аватара */
         .avatar-container {
             position: relative;
             width: 110px;
             height: 110px;
             margin: 0 auto 2rem auto;
-            transform: translateZ(30px); /* Вынесение в 3D */
+            transform: translateZ(40px);
         }
 
         .avatar {
@@ -104,16 +108,14 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
             background-color: #0d0e12;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* ПРОКАЧАННАЯ ПЛАШКА LIVE С ДВОЙНОЙ АНИМАЦИЕЙ */
+        /* ПЛАШКА LIVE */
         .status-badge {
             position: absolute;
             bottom: -5px;
             left: 50%;
-            /* Изначально центрируем элемент */
-            transform: translateX(-50%) translateZ(10px);
+            transform: translateX(-50%) translateZ(15px);
             font-size: 0.6rem;
             font-weight: 800;
             padding: 6px 18px;
@@ -121,17 +123,13 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             z-index: 2;
-            overflow: hidden; /* Чтобы блик не вылетал за края плашки */
-            
+            overflow: hidden;
             background: #7f1d1d;
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.4);
-            
-            /* Подключаем плавную пульсацию размера и тени */
             animation: pulseLive 2.4s infinite cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Создаем бегущий глянцевый блик через псевдоэлемент */
         .status-badge::before {
             content: '';
             position: absolute;
@@ -139,17 +137,12 @@
             left: -150%;
             width: 50%;
             height: 100%;
-            background: linear-gradient(
-                90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.4), 
-                transparent
-            );
-            transform: skewX(-20deg); /* Наклон блика для динамики */
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg);
             animation: shineGlare 4s infinite ease-in-out;
         }
 
-        /* Дорогой стальной градиент на никнейме */
+        /* Текст и Никнейм */
         .nickname {
             font-size: 2.1rem;
             font-weight: 700;
@@ -158,7 +151,7 @@
             background: linear-gradient(180deg, #ffffff 30%, #a1a1aa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transform: translateZ(20px);
+            transform: translateZ(30px);
         }
 
         .status-text {
@@ -168,15 +161,16 @@
             margin-bottom: 2.8rem;
             line-height: 1.6;
             letter-spacing: 0.01rem;
-            transform: translateZ(15px);
+            transform: translateZ(20px);
         }
 
-        /* Кнопки */
+        /* Сетка кнопок */
         .links-grid {
             display: flex;
             flex-direction: column;
             gap: 0.85rem;
             transform: translateZ(25px);
+            margin-bottom: 2rem;
         }
 
         .stream-link {
@@ -197,7 +191,6 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Интерактивный внутренний градиент при наведении */
         .stream-link::before {
             content: '';
             position: absolute;
@@ -207,66 +200,295 @@
             transition: opacity 0.4s ease;
         }
 
-        /* YouTube */
+        /* Подсветка кнопок */
         .link-youtube { color: #fca5a5; }
         .link-youtube::before { background: radial-gradient(circle at center, rgba(239, 68, 68, 0.15) 0%, transparent 100%); }
         .link-youtube:hover { border-color: rgba(239, 68, 68, 0.3); color: #fecaca; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.05); }
 
-        /* Kick */
         .link-kick { color: #86efac; }
         .link-kick::before { background: radial-gradient(circle at center, rgba(34, 197, 94, 0.12) 0%, transparent 100%); }
         .link-kick:hover { border-color: rgba(34, 197, 94, 0.3); color: #bbf7d0; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.05); }
 
-        /* Telegram */
         .link-telegram { color: #7dd3fc; }
         .link-telegram::before { background: radial-gradient(circle at center, rgba(14, 165, 233, 0.15) 0%, transparent 100%); }
         .link-telegram:hover { border-color: rgba(14, 165, 233, 0.3); color: #e0f2fe; box-shadow: 0 10px 25px rgba(14, 165, 233, 0.05); }
+/* ==========================================
+   НОВЫЕ СТИЛИ ДЛЯ КНОПКИ СЕРВЕРА И МАСКИ
+   ========================================== */
 
-        .stream-link:hover::before {
-            opacity: 1;
-        }
-        
-        .stream-link:hover {
-            transform: translateY(-2px);
+/* Общие настройки кнопки сервера */
+/* ОБНОВЛЕННЫЙ СТИЛЬ КНОПКИ СЕРВЕРА */
+/* ОБНОВЛЕННЫЙ СТИЛЬ КНОПКИ СЕРВЕРА */
+.link-server { 
+    color: #a7f3d0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.link-server::before { 
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.15) 0%, transparent 100%); 
+}
+.link-server:hover { 
+    border-color: rgba(16, 185, 129, 0.4); 
+    color: #d1fae5; 
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.08); 
+}
+
+/* СТИЛИЗАЦИЯ И ПОДСВЕТКА ВЕКТОРНОЙ МАСКИ */
+.server-logo-svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5)); /* Мягкое золотистое свечение маски */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+}
+
+/* ЖИВАЯ ЗЕЛЕНАЯ ТОЧКА */
+.online-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.online-dot::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #10b981;
+    border-radius: 50%;
+    opacity: 0;
+    animation: dotPulse 2s infinite ease-out;
+    box-sizing: border-box;
+}
+
+.server-text {
+    font-weight: 500;
+}
+
+/* Анимация при наведении */
+.link-server:hover .server-logo-svg {
+    transform: scale(1.2) rotate(5deg);
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.9));
+}
+
+@keyframes dotPulse {
+    0% { transform: scale(0.4); opacity: 0; }
+    50% { opacity: 0.6; }
+    100% { transform: scale(1.2); opacity: 0; }
+}/* Эффект анимации маски при наведении на кнопку */
+.link-server:hover .server-logo {
+    transform: scale(1.15);
+    border-color: rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.5);
+}
+
+/* Волна от зеленой точки */
+@keyframes dotPulse {
+    0% { transform: scale(0.4); opacity: 0; }
+    50% { opacity: 0.6; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+        .stream-link:hover::before { opacity: 1; }
+        .stream-link:hover { transform: translateY(-2px) translateZ(5px); }
+
+        /* КНОПКА СКРОЛЛА К ВИДЕО */
+        .scroll-to-video-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 1.15rem 1.5rem;
+            border-radius: 14px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.03rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+            transform: translateZ(35px);
         }
 
-        /* 1. Эффект сердцебиения и неонового дыхания (СмещениеtranslateX(-50%) сохраняем!) */
+        .scroll-to-video-btn:hover {
+            background: #ffffff;
+            color: #050507;
+            border-color: #ffffff;
+            transform: translateY(-2px) scale(1.01) translateZ(35px);
+            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.08);
+        }
+
+        .scroll-to-video-btn svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .scroll-to-video-btn:hover svg {
+            transform: translateY(3px);
+        }
+
+
+        /* СЕКЦИЯ ПОРТФОЛИО: СЕТКА И СТИЛИ ДЛЯ СЛОТОВ-ССЫЛОК */
+        .video-section {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .video-slot {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding-bottom: 56.25%; /* Пропорции 16:9 */
+            height: 0;
+            background: #0a0b0e;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        border-color 0.4s ease, 
+                        box-shadow 0.4s ease;
+        }
+
+        /* Превью-картинка */
+        .video-slot img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.4s ease;
+            filter: brightness(0.85);
+        }
+
+        /* Контейнер кнопки Play */
+        .video-slot .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: 65px;
+            height: 45px;
+            background: rgba(10, 11, 14, 0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 3;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        background 0.3s ease, 
+                        border-color 0.3s ease, 
+                        box-shadow 0.3s ease;
+        }
+
+        /* Треугольник внутри Play */
+        .video-slot .play-btn-arrow {
+            width: 0;
+            height: 0;
+            border-top: 9px solid transparent;
+            border-left: 16px solid #ffffff;
+            border-bottom: 9px solid transparent;
+            margin-left: 4px;
+            transition: border-left-color 0.3s ease;
+        }
+
+        /* --- ЭФФЕКТЫ МЯГКОЙ ПОДСВЕТКИ ПРИ НАВЕДЕНИИ --- */
+        .video-slot:hover {
+            transform: translateY(-6px) scale(1.015);
+            border-color: rgba(99, 102, 241, 0.4); 
+            
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.8), 
+                0 0 40px rgba(99, 102, 241, 0.15), 
+                0 0 80px rgba(168, 85, 247, 0.08); 
+        }
+
+        .video-slot:hover img {
+            transform: scale(1.04);
+            filter: brightness(1.05);
+        }
+
+        .video-slot:hover .play-btn {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .video-slot:hover .play-btn-arrow {
+            border-left-color: #050507;
+        }
+
+
+        /* Анимации плашки LIVE */
         @keyframes pulseLive {
-            0% { 
-                transform: translateX(-50%) translateZ(10px) scale(1); 
-                box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); 
-                border-color: rgba(239, 68, 68, 0.4); 
-            }
-            15% { 
-                transform: translateX(-50%) translateZ(10px) scale(1.05); 
-                box-shadow: 0 0 18px rgba(239, 68, 68, 0.4); 
-                border-color: rgba(239, 68, 68, 0.6); 
-            }
-            30% { 
-                transform: translateX(-50%) translateZ(10px) scale(1); 
-                box-shadow: 0 0 12px rgba(239, 68, 68, 0.25); 
-            }
-            45% { 
-                transform: translateX(-50%) translateZ(10px) scale(1.03); 
-                box-shadow: 0 0 16px rgba(239, 68, 68, 0.35); 
-            }
-            70%, 100% { 
-                transform: translateX(-50%) translateZ(10px) scale(1); 
-                box-shadow: 0 0 10px rgba(239, 68, 68, 0.15); 
-                border-color: rgba(239, 68, 68, 0.3); 
-            }
+            0% { transform: translateX(-50%) translateZ(15px) scale(1); box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); }
+            15% { transform: translateX(-50%) translateZ(15px) scale(1.05); box-shadow: 0 0 18px rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 0.6); }
+            30% { transform: translateX(-50%) translateZ(15px) scale(1); box-shadow: 0 0 12px rgba(239, 68, 68, 0.25); }
+            45% { transform: translateX(-50%) translateZ(15px) scale(1.03); box-shadow: 0 0 16px rgba(239, 68, 68, 0.35); }
+            70%, 100% { transform: translateX(-50%) translateZ(15px) scale(1); box-shadow: 0 0 10px rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
         }
 
-        /* 2. Анимация бегущего блика */
         @keyframes shineGlare {
             0% { left: -150%; }
-            15%, 100% { left: 150%; } /* Блик пробегает быстро, а потом "отдыхает" */
+            15%, 100% { left: 150%; }
+        }
+/* СТИЛИ ДЛЯ АВТОРСКИХ ПРАВ */
+.site-footer {
+    width: 100%;
+    text-align: center;
+    padding: 2rem 0 1rem 0;
+    margin-top: auto; /* Прижимает к низу, если контента мало */
+    border-top: 1px solid rgba(255, 255, 255, 0.03); /* Тонкая премиальная линия разграничения */
+}
+
+.site-footer p {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #4b5563; /* Приглушенный серый цвет */
+    letter-spacing: 0.05rem;
+    text-transform: uppercase; /* Делает текст аккуратным и строгим */
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+/* Эффект при наведении на текст */
+.site-footer p:hover {
+    opacity: 1;
+    color: #71717a;
+}
+
+        /* Адаптивность под мобильные устройства */
+        @media (max-width: 768px) {
+            body { padding: 3rem 1rem; }
+            .video-section {
+                grid-template-columns: 1fr; 
+                max-width: 450px; 
+                gap: 1.5rem;
+            }
+            .main-card { margin-bottom: 3.5rem; }
         }
 
-        /* Адаптивность */
         @media (max-width: 480px) {
-            body { padding: 1.5rem; }
-            .main-card { padding: 3rem 2rem; }
+            .main-card { padding: 3rem 1.5rem; }
             .nickname { font-size: 1.8rem; }
         }
     </style>
@@ -278,57 +500,133 @@
         <div class="bg-line-v"></div>
     </div>
 
-    <div class="main-card" id="main-card">
-        <div class="avatar-container">
-            <img src="photo_2025-09-19_08-22-36.jpg" alt="h3kathemaker" class="avatar">
-            <div class="status-badge">Live</div>
+    <div class="page-wrapper">
+
+        <div class="main-card" id="main-card">
+            <div class="avatar-container">
+                <img src="123.jpg" alt="h3kathemaker" class="avatar">
+                <div class="status-badge">Live</div>
+            </div>
+
+            <h1 class="nickname">h3kathemaker</h1>
+            <p class="status-text">Игры и ламповое общение. Присоединяйся к трансляции.</p>
+
+            <div class="links-grid">
+                <div class="links-grid">
+    <!-- КНОПКА ИГРОВОГО СЕРВЕРА С ЛОГОТИПОМ -->
+ <a href="https://bohpts.org/" target="_blank" class="stream-link link-server">
+    <span class="online-dot"></span>
+    
+    <svg class="server-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L15.5 5.5L14.5 9.5L17 7L18.5 11.5L15.5 15.5L12 13L8.5 15.5L5.5 11.5L7 7L9.5 9.5L8.5 5.5L12 2Z" fill="#FBBF24" stroke="#F59E0B" stroke-width="1"/>
+        <path d="M12 13V22L9 19L8.5 15.5M12 13L15 19L12 22" stroke="#F59E0B" stroke-width="1"/>
+        <path d="M9.5 9.5L12 11L14.5 9.5" stroke="#FBBF24" stroke-width="1.5"/>
+        <circle cx="9.5" cy="9.5" r="1" fill="#EF4444"/>
+        <circle cx="14.5" cy="9.5" r="1" fill="#EF4444"/>
+    </svg>
+    
+    <span class="server-text">BOHPTS PRIVATE SERVER</span>
+
+</a>    <a href="https://www.youtube.com/@h3kathemaker" target="_blank" class="stream-link link-youtube">
+        <span>YouTube Стримы</span>
+    </a>
+    
+    <a href="https://kick.com/h3kathemaker" target="_blank" class="stream-link link-kick">
+        <span>Kick Трансляции</span>
+    </a>
+
+    <a href="https://t.me/selfdestruct696" target="_blank" class="stream-link link-telegram">
+        <span>Telegram Канал</span>
+    </a>
+</div>
+            </div>
+
+            <button class="scroll-to-video-btn" onclick="document.getElementById('portfolio-grid').scrollIntoView();">
+                <span>Смотреть портфолио</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+            </button>
         </div>
 
-        <h1 class="nickname">h3kathemaker</h1>
-        <p class="status-text">Игры и ламповое общение. Присоединяйся к трансляции.</p>
-
-        <div class="links-grid">
-            <a href="https://www.youtube.com/@h3kathemaker" target="_blank" class="stream-link link-youtube">
-                <span>YouTube Стримы</span>
-            </a>
+        <div class="video-section" id="portfolio-grid">
             
-            <a href="https://kick.com/h3kathemaker" target="_blank" class="stream-link link-kick">
-                <span>Kick Трансляции</span>
+            <a href="https://www.youtube.com/watch?v=nRnDq2QLguM" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/nRnDq2QLguM/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
             </a>
 
-            <a href="https://t.me/selfdestruct696" target="_blank" class="stream-link link-telegram">
-                <span>Telegram Канал</span>
+            <a href="https://www.youtube.com/watch?v=qEjIuZVDyDk" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/qEjIuZVDyDk/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
             </a>
+
+            <a href="https://www.youtube.com/watch?v=CD3lxqHwQWw" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/CD3lxqHwQWw/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=qWp9qwVYaGY" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/qWp9qwVYaGY/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=esOUeRVc6GA" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/esOUeRVc6GA/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=H5PPgLUG0X8" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/H5PPgLUG0X8/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=_7kkI9D1vE8" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/_7kkI9D1vE8/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=jDwHnpi3B0U" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/jDwHnpi3B0U/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=jdhOfM1MGec" target="_blank" class="video-slot">
+                <img src="https://img.youtube.com/vi/jdhOfM1MGec/maxresdefault.jpg" alt="YouTube Video">
+                <div class="play-btn"><div class="play-btn-arrow"></div></div>
+            </a>
+
         </div>
+		<footer class="site-footer">
+            <p>&copy; 2026 h3kathemaker. Все права защищены.</p>
+        </footer>
+
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const card = document.getElementById('main-card');
             
-            // 1. Активация проявления карточки
-            setTimeout(() => {
-                card.classList.add('activated');
-            }, 100);
-
-            // 2. Интеллектуальный 3D-параллакс эффект для ПК
             if (window.innerWidth > 768) {
-                document.addEventListener('mousemove', (e) => {
-                    const cx = window.innerWidth / 2;
-                    const cy = window.innerHeight / 2;
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
                     
-                    const rotateX = ((cy - e.clientY) / cy) * 8; 
-                    const rotateY = ((e.clientX - cx) / cx) * 8;
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
                     
-                    card.style.transition = 'transform 0.05s ease-out, box-shadow 0.05s ease-out';
-                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1)`;
-                    card.style.boxShadow = `${-rotateY * 2}px ${rotateX * 2}px 80px rgba(0, 0, 0, 0.9)`;
+                    const rotateX = -(y / (rect.height / 2)) * 7;
+                    const rotateY = (x / (rect.width / 2)) * 7;
+                    
+                    card.style.transition = 'transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.15s ease-out';
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+                    card.style.boxShadow = `${-rotateY * 3}px ${-rotateX * 3}px 90px rgba(0, 0, 0, 0.95)`;
                 });
 
-                document.addEventListener('mouseleave', () => {
-                    card.style.transition = 'transform 0.5s ease-out, box-shadow 0.5s ease-out';
-                    card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
-                    card.style.boxShadow = `0 30px 70px rgba(0, 0, 0, 0.8)`;
+                card.addEventListener('mouseleave', () => {
+                    card.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s ease-out';
+                    card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+                    card.style.boxShadow = '0 30px 70px rgba(0, 0, 0, 0.8)';
                 });
             }
         });
